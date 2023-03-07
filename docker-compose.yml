@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  database: 
+    image: 'postgres:11-alpine3.17'
+    ports:
+      - 15432:5432
+    # environment:
+    #   POSTGRES_PASSWORD: password
+    #   POSTGRES_USER: axelor
+    #   POSTGRES_DB: axelor-open-suite
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data/
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      net:
+        ipv4_address: "192.168.1.198"
+  
+  quantum:
+    image: quantum
+    ports:
+      - 8082:8080
+    networks:
+      net:
+        ipv4_address: "192.168.1.101"
+    volumes:
+      - ./pgadmin-data/:/var/lib/pgadmin/
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8083:8080
+    networks:
+      net:
+        ipv4_address: "192.168.1.199"
+
+networks:
+  net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
